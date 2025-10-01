@@ -10,7 +10,7 @@ elke_s_flight_5 = pd.read_excel('data/30sFlight_5.xlsx')
 elke_s_flight_6 = pd.read_excel('data/30sFlight_6.xlsx')
 schedule_airport = pd.read_csv('data/schedule_airport.csv')
 airports_locaties = pd.read_csv('data/airports-extended-clean.csv', sep=';')
-
+airlines = pd.read_csv('data/airlines.csv')
 def main_page():
     sl.markdown("# Homepagina ")
 
@@ -47,13 +47,18 @@ def getAllFlightAirline(airline):
     return np.where(schedule_airport['UNQ'] == airline)
 
 flights = getAllFlightAirline(selectedAirline)
+def getAirlineName(airline_code):
+    return np.where(airlines[airlines['IATA'] == airline_code]['Name'], airlines[airlines['IATA'] == airline_code]['Name'], "Unknown Airline")[0]
 
+sl.header(getAirlineName(selectedAirline))
 # Vliegveld bestemming vinden op basis van flucht
 def getDestinationAirport(flightIndices):
     return schedule_airport.iloc[flightIndices]['Org/Des'].value_counts().reset_index()
 
 destinations = getDestinationAirport(flights)
+sl.header("Aantal vluchten per bestemming")
 sl.write(destinations)
+# get airline name from airlines.csv and show in streamlit
 
 # find location of destination airport
 def getLocationDestinationAirport(destinations):
@@ -71,6 +76,8 @@ def getLocationDestinationAirport(destinations):
 
 locations = getLocationDestinationAirport(destinations)
 sl.write(locations)
+
+
 
 # kaart maken met folium en streamlit van waar vliegtuigen naartoe gaan met een lijn
 def createMap(locations):
