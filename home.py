@@ -17,6 +17,18 @@ def main_page():
 def page2():
     sl.markdown("# Pagina 2")
 
+# Dropping nutteloze data
+# schedule_airport.drop('DL1', inplace=True, axis=1)
+# schedule_airport.drop('DL2', inplace=True, axis=1)
+# schedule_airport.drop('IX1', inplace=True, axis=1)
+# schedule_airport.drop('IX2', inplace=True, axis=1)
+# print(schedule_airport.head())
+
+# Filteren op ICAO codes die voorkomen in beide
+airports_locaties_filtered = airports_locaties[
+    airports_locaties['ICAO'].isin(schedule_airport['Org/Des'])
+]
+
 # Explore data
 # print(schedule_airport.info())
 
