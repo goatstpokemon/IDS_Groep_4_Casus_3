@@ -22,7 +22,7 @@ schedule_airport.drop('DL1', inplace=True, axis=1)
 schedule_airport.drop('DL2', inplace=True, axis=1)
 schedule_airport.drop('IX1', inplace=True, axis=1)
 schedule_airport.drop('IX2', inplace=True, axis=1)
-# print(schedule_airport.head())
+print(schedule_airport.head())
 
 # Filteren op ICAO codes die voorkomen in beide
 airports_locaties_filtered = airports_locaties[
