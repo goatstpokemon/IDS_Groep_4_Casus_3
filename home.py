@@ -8,7 +8,7 @@ elke_s_flight_4 = pd.read_excel('data/30sFlight_4.xlsx')
 elke_s_flight_5 = pd.read_excel('data/30sFlight_5.xlsx')
 elke_s_flight_6 = pd.read_excel('data/30sFlight_6.xlsx')
 schedule_airport = pd.read_csv('data/schedule_airport.csv')
-
+airports_locaties = pd.read_csv('data/airports-extended-clean.csv', sep=';')
 
 def main_page():
     sl.markdown("# Homepagina ")
