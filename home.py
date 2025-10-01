@@ -54,4 +54,4 @@ def getDestinationAirport(flightIndices):
 destinations = getDestinationAirport(flights)
 sl.write(destinations)
 
-# pull
+# pulmizukil
