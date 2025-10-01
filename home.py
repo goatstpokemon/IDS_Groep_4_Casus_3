@@ -1,6 +1,7 @@
 import streamlit as sl
 import pandas as pd
 import numpy as np
+import folium
 elke_s_flight_1 = pd.read_excel('data/30sFlight_1.xlsx')
 elke_s_flight_2 = pd.read_excel('data/30sFlight_2.xlsx')
 elke_s_flight_3 = pd.read_excel('data/30sFlight_3.xlsx')
@@ -22,7 +23,7 @@ def page2():
 # schedule_airport.drop('DL2', inplace=True, axis=1)
 # schedule_airport.drop('IX1', inplace=True, axis=1)
 # schedule_airport.drop('IX2', inplace=True, axis=1)
-# print(schedule_airport.head())
+print(schedule_airport.head())
 
 # Filteren op ICAO codes die voorkomen in beide
 airports_locaties_filtered = airports_locaties[
@@ -54,4 +55,52 @@ def getDestinationAirport(flightIndices):
 destinations = getDestinationAirport(flights)
 sl.write(destinations)
 
-# pulmizukil
+# find location of destination airport
+def getLocationDestinationAirport(destinations):
+    # destinations can be a DataFrame (from value_counts().reset_index()) or a list/Series of ICAO codes
+    if isinstance(destinations, pd.DataFrame):
+        # common column produced by value_counts().reset_index() is 'index'
+        if 'index' in destinations.columns:
+            codes = destinations['index']
+        else:
+            # fallback to the first column if different
+            codes = destinations.iloc[:, 0]
+    else:
+        codes = destinations
+    return airports_locaties_filtered[airports_locaties_filtered['ICAO'].isin(codes)]
+
+locations = getLocationDestinationAirport(destinations)
+sl.write(locations)
+
+# kaart maken met folium en streamlit van waar vliegtuigen naartoe gaan met een lijn
+def createMap(locations):
+    # start map centered around the Netherlands
+    m = folium.Map(location=[52.1326, 5.2913], zoom_start=4)
+
+    # add markers for each airport, tolerate comma decimals and missing values
+    for _, row in locations.iterrows():
+        lat_raw = row.get('Latitude', None)
+        lon_raw = row.get('Longitude', None)
+
+        if pd.isna(lat_raw) or pd.isna(lon_raw):
+            continue
+
+        try:
+            lat = float(str(lat_raw).replace(',', '.'))
+            lon = float(str(lon_raw).replace(',', '.'))
+        except (ValueError, TypeError):
+            # skip rows with invalid coordinates
+            continue
+
+        popup_text = f"{row.get('City', '')} ({row.get('ICAO', '')})"
+        folium.Marker(
+            location=[lat, lon],
+            popup=popup_text,
+            icon=folium.Icon(color='blue', icon='plane', prefix='fa')
+        ).add_to(m)
+
+    return m
+
+map_ = createMap(locations)
+# render folium map in Streamlit
+sl.components.v1.html(map_._repr_html_(), height=600)
