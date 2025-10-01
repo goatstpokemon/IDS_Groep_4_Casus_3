@@ -19,7 +19,12 @@ def page2():
 
 # Explore data
 print(schedule_airport.info())
+
+#Verschillende maatschappijen
 schedule_airport['UNQ'] = schedule_airport['FLT'].astype(str).str[:2]
 print(schedule_airport['UNQ'].value_counts().reset_index())
 
 
+# Top 5 van Netwerkkaart maken
+top5 = schedule_airport['UNQ'].unique()
+sl.selectbox("Select a Airline:", top5)
