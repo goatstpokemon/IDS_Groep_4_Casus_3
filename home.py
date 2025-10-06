@@ -5,6 +5,7 @@ import folium
 
 # Data inladen
 s = pd.read_csv("data/schedule_airport.csv")
+airports = pd.read_csv("data/airports.csv")
 
 def add_logo():
     sl.markdown(
@@ -134,3 +135,27 @@ df['fpm'] = pd.to_datetime(df['STD'], format='%d/%m/%Y', errors='coerce').dt.mon
 flights_per_month = df['fpm'].value_counts().sort_index() / 2
 
 sl.bar_chart(flights_per_month.reindex(range(1, 13), fill_value=0))
+
+
+#tabel die top 10 bestemmingen laat zien
+departures = s[s['LSV']== 'S']
+# Top 10 bestemmingen met de meeste vluchten
+top_10_destinations = departures['Org/Des'].value_counts().head(10).reset_index()
+
+#print(top_10_destinations)
+
+
+namen = []
+for code in top_10_destinations['Org/Des']:
+    # np.where zoekt de index waar de code matcht in de ICAO kolom
+    match_index = np.where(airports['ICAO'] == code)
+
+    if len(match_index[0]) > 0:
+        naam = airports['Name'].iloc[match_index[0][0]]
+    else:
+        naam = None # Geen match gevonden
+    namen.append(naam)
+
+top_10_destinations['Vliegveld Naam'] = namen
+
+sl.write(top_10_destinations)
