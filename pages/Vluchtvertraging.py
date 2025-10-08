@@ -6,19 +6,17 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 
-# ================== PAGINA INSTELLINGEN ==================
 st.set_page_config(layout="wide")
 st.logo('https://companieslogo.com/img/orig/FHZN.SW_BIG.D-79fb25dc.png?t=1720244491')
 
-# ================== UITLEG PAGINA ==================
 st.title("Analyse van vluchtvertragingen per luchtvaartmaatschappij")
 
 st.markdown("""
 Op deze pagina wordt informatie weergegeven over vertragingen per luchtvaartmaatschappij.
 
-- Je kunt een bestemming kiezen om te zien hoe luchtvaartmaatschappijen daarop presteren.  
-- Er wordt getoond wat de gemiddelde vertraging per maatschappij is en hoeveel vluchten ze uitvoeren.  
-- Daarnaast is een interactieve kaart te zien van de route van Zürich naar de geselecteerde bestemming.  
+- Je kunt een bestemming kiezen om te zien hoe luchtvaartmaatschappijen daarop presteren.
+- Er wordt getoond wat de gemiddelde vertraging per maatschappij is en hoeveel vluchten ze uitvoeren.
+- Daarnaast is een interactieve kaart te zien van de route van Zürich naar de geselecteerde bestemming.
 - In de grafieken zie je:
   - Bubble chart: aantal vluchten vs gemiddelde vertraging, kleur = kans op vertraging, inclusief trendlijn.
   - Punctualiteitsgrafiek: verdeling Early, On-Time en Delayed per maatschappij.
@@ -26,7 +24,7 @@ Op deze pagina wordt informatie weergegeven over vertragingen per luchtvaartmaat
 Door deze trends te analyseren, kun je beter voorspellen welke maatschappijen in de toekomst mogelijk meer vertragingen zullen hebben.
 """)
 
-# ================== DATA LADEN ==================
+
 @st.cache_data
 def load_data():
     schedule_airport = pd.read_csv("data/schedule_airport.csv", sep=",", low_memory=False)
@@ -39,7 +37,7 @@ def load_data():
 
 schedule_airport, airports, airlines = load_data()
 
-# ================== DATA OPSCHONEN ==================
+
 kolommen = ['STD', 'FLT', 'STA_STD_ltc', 'ATA_ATD_ltc', 'LSV', 'Org/Des']
 schedule_airport = schedule_airport[kolommen].copy()
 
@@ -49,12 +47,10 @@ schedule_airport["UNQ"] = schedule_airport["FLT"].astype(str).str[:2]
 schedule_airport['Vertraging (min)'] = (schedule_airport['ATA_ATD_ltc'] - schedule_airport['STA_STD_ltc']).dt.total_seconds() / 60
 schedule_airport = schedule_airport[(schedule_airport['Vertraging (min)'].notna()) & (schedule_airport['LSV'] == 'S')]
 
-# ================== BESTEMMING KIEZEN ==================
 bestemmingen = sorted(schedule_airport['Org/Des'].dropna().unique())
 gekozen_bestemming = st.selectbox("Kies een bestemming", bestemmingen)
 df_bestemming = schedule_airport[schedule_airport['Org/Des'] == gekozen_bestemming]
 
-# ================== GEM. VERTAGING PER MAATSCHAPPIJ ==================
 vertraging_per_maatschappij = (
     df_bestemming.groupby('UNQ')
     .agg({'Vertraging (min)': 'mean', 'FLT': 'count'})
@@ -72,7 +68,6 @@ vertraging_per_maatschappij = vertraging_per_maatschappij[['Name', 'IATA', 'Aant
 st.subheader(f"Gemiddelde vertraging en aantal vluchten per luchtvaartmaatschappij naar {gekozen_bestemming}")
 st.dataframe(vertraging_per_maatschappij, use_container_width=True)
 
-# ================== KAART ==================
 def maak_kaart(bestemming_code):
     zrh_lat, zrh_lon = 47.458, 8.555
     kaart = folium.Map(location=[zrh_lat, zrh_lon], zoom_start=4)
@@ -93,7 +88,6 @@ kaart.save("kaart.html")
 st.subheader(f"Route van Zurich naar {gekozen_bestemming}")
 st.components.v1.html(open("kaart.html", "r", encoding="utf-8").read(), height=500)
 
-# ================== BUBBLE CHART ==================
 vertraging_plot = (
     df_bestemming.groupby('UNQ')
     .agg(
@@ -140,11 +134,11 @@ fig3.update_layout(
     coloraxis_colorbar=dict(title="Kans op vertraging (%)")
 )
 
-# ================== BUBBLE GRAFIEK (BOVENAAN) ==================
+
 st.subheader(f"Kans op vertraging per luchtvaartmaatschappij naar {gekozen_bestemming}")
 st.plotly_chart(fig3, use_container_width=True)
 
-# ================== CONCLUSIE TREND ==================
+
 st.markdown("### Conclusie trendlijn")
 if corr < -0.2:
     st.success(f"Er is een duidelijke **dalende trend** (correlatie: {corr:.2f}). Meer vluchten gaan gepaard met minder vertraging.")
@@ -153,7 +147,7 @@ elif corr > 0.2:
 else:
     st.info(f"Er is **geen duidelijke trend** zichtbaar tussen het aantal vluchten en de gemiddelde vertraging (correlatie: {corr:.2f}).")
 
-# ================== PUNCTUALITEIT ==================
+
 vertraging_frequentie = (
     df_bestemming.groupby('UNQ')
     .agg({'Vertraging (min)': 'mean', 'FLT': 'count'})
@@ -164,7 +158,7 @@ vertraging_frequentie = vertraging_frequentie.merge(airlines[['IATA', 'Name']], 
 
 maatschappijen = vertraging_frequentie['IATA'].unique()
 
-# DROPDOWN HIER PLAATSEN —> BOVEN DE PUNCTUALITEITSGRAFIEK
+
 gekozen_maatschappij = st.selectbox("Kies een luchtvaartmaatschappij voor punctualiteit", maatschappijen)
 
 df_maatschappij = df_bestemming[df_bestemming['UNQ'] == gekozen_maatschappij]
@@ -173,7 +167,7 @@ labels = ['Early', 'On-time', 'Delayed']
 df_maatschappij['Categorie'] = pd.cut(df_maatschappij['Vertraging (min)'], bins=bins, labels=labels)
 punctualiteit = df_maatschappij['Categorie'].value_counts(normalize=True).reindex(labels).fillna(0) * 100
 
-# ================== PUNCTUALITEIT GRAFIEK (ONDERAAN) ==================
+
 st.subheader(f"Punctualiteit van {gekozen_maatschappij}")
 fig2, ax2 = plt.subplots()
 punctualiteit.plot(kind='bar', ax=ax2, color=['green', 'gold', 'red'])

@@ -27,46 +27,41 @@ selected_datum = st.date_input(
 )
 
 # Data filteren
-# SADFI = np.where(SADF['LSV'] == 'L') 
-# SADFO = np.where(SADF['LSV'] == 'S') 
-SADFI = SADF[SADF['LSV'] == 'L'].copy()
-SADFO = SADF[SADF['LSV'] == 'S'].copy()
+# SADFI = np.where(SADF['LSV'] == 'L')
+# SADFO = np.where(SADF['LSV'] == 'S')
+day_SADFI = SADF[(SADF['LSV'] == 'L') & (SADF["date"] == pd.Timestamp(selected_datum))].copy()
+day_SADFO = SADF[(SADF['LSV'] == 'S') & (SADF["date"] == pd.Timestamp(selected_datum))].copy()
 
-# Filter data op geselecteerde datum
-day_SADF = SADF[SADF["date"] == pd.Timestamp(selected_datum)]
-
-if day_SADF.empty:
+if day_SADFI.empty and day_SADFO.empty:
     st.warning(f"Geen vluchten gevonden voor {selected_datum}.")
 else:
-    # Maak tijdstappen van 15 minuten
-    start_tijd = SADF["WT"].min()
-    eind_tijd = SADF["WT"].max()
-    
+    # Maak tijdstappen van 10 minuten for the selected day only
+    start_tijd = pd.Timestamp(selected_datum)
+    eind_tijd = start_tijd + timedelta(days=1)
+
     times = pd.date_range(start=start_tijd, end=eind_tijd, freq="10min")
 
     ground_counts = []
-    on_ground = 40      #zoals in voorbeeld
+    initial_on_ground = 40  # Starting count
 
     for time in times:
-        on_ground += (SADFI["WT"] <= time).sum()
-        SADFI = SADFI[SADFI["WT"] > time]
+        # Count arrivals (landed by this time)
+        arrivals = (day_SADFI["WT"] <= time).sum()
+        # Count departures (departed by this time)
+        departures = (day_SADFO["WT"] <= time).sum()
 
-        on_ground -= (SADFO["WT"] <= time).sum()
-        SADFO = SADFO[SADFO["WT"] > time]
-
+        on_ground = initial_on_ground + arrivals - departures
         ground_counts.append(on_ground)
 
-    ground_counts = []
-
-    # # Tel vliegtuigen op de grond per tijdstap
-    # for t in times:
-    #     on_ground = 40              #zoals in voorbeeld
-    #     for _, row in day_SADF.iterrows():
-    #         if row["LSV"] == "L":
-    #             if row["ATA_ATD_ltc"] <= t < row["STA_STD_ltc"]:
-    #                 on_ground += 1
-    #         elif row["LSV"] == "S":
-    #             if row["ATA_ATD_ltc"] > t:
-    #                 on_ground += 1
-    #     ground_counts.append(on_ground)
-
+    # Plot
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(times, ground_counts, linewidth=2)
+    ax.set_xlabel("Tijd")
+    ax.set_ylabel("Vliegtuigen op de grond")
+    ax.set_title(f"Aantal vliegtuigen op de grond - {selected_datum}")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+    ax.xaxis.set_major_locator(mdates.HourLocator(interval=2))
+    plt.xticks(rotation=45)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    st.pyplot(fig)
