@@ -5,7 +5,70 @@ import folium
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
+image_url = "https://media.myswitzerland.com/image/fetch/c_lfill,g_auto,w_3200,h_1800/f_auto,q_80,fl_keep_iptc/https://www.myswitzerland.com/-/media/st/gadmin/images/partner/strapa/flughafen%20zrich/03_airport_zurich_plane_92626.jpg"
 
+st.markdown(
+    """
+    <style>
+      .image-overlay-container {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px;
+        line-height: 0; /* remove whitespace gap below images */
+      }
+      .image-overlay-container img {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 20px;
+        display: block;
+      }
+      .overlay-text {
+        position: absolute;
+        inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0; */
+        display: flex;
+        align-items: center; /* vertical centering */
+        justify-content: center; /* horizontal centering */
+        padding: 1rem;
+        color: white;
+        font-weight: 500;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 2.5rem;
+        letter-spacing: 1px;
+        text-align: center;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        pointer-events: none; /* clicks pass through if needed */
+      }
+      /* Optional: add a dark gradient for contrast */
+      .overlay-gradient::before {
+        content: "";
+        position: absolute;
+        border-radius: 20px;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.4),
+          rgba(0,0,0,0.2) 40%,
+          rgba(0,0,0,0.5)
+        );
+        z-index: 0;
+      }
+      .overlay-text > span {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+    <div class="image-overlay-container overlay-gradient">
+      <img src='""" + image_url + """' alt="Hero" />
+      <div class="overlay-text">
+        <span>Zurich Airport — Vluchtvertraging</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 st.set_page_config(layout="wide")
 st.logo('https://companieslogo.com/img/orig/FHZN.SW_BIG.D-79fb25dc.png?t=1720244491')
 

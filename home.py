@@ -101,7 +101,7 @@ sl.markdown(
     <div class="image-overlay-container overlay-gradient">
       <img src='""" + image_url + """' alt="Hero" />
       <div class="overlay-text">
-        <span>Zurich Airport — Dashboard Home</span>
+        <span>Zurich Airport — Home</span>
       </div>
     </div>
     """,
@@ -244,7 +244,7 @@ print(top_10_airlines)
 #namen = []
 #for code in s['FLT']:
     # np.where zoekt de index waar de code matcht in de IATA kolom
-  
+
     #match_index = np.where(airlines['IATA'] == code)
 
     #if len(match_index[0]) > 0:
