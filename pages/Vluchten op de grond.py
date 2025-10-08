@@ -4,17 +4,14 @@ import streamlit as st
 import numpy as np
 import folium
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates  # ⬅️ toegevoegd
+import matplotlib.dates as mdates
 
 # === Data inladen ===
 SA = pd.read_csv('data/schedule_airport.csv')
 SADF = pd.DataFrame(SA)
 
 SADF["date"] = pd.to_datetime(SA["STD"], format="%d/%m/%Y")
-# SADF["STA_STD_ltc"] = pd.to_datetime(SA["STA_STD_ltc"], format="%H:%M:%S").dt.time
 SADF["ATA_ATD_ltc"] = pd.to_datetime(SA["ATA_ATD_ltc"], format="%H:%M:%S").dt.time
-
-# SADF["STA_STD_ltc"] = SADF.apply(lambda x: datetime.combine(x["date"], x["STA_STD_ltc"]), axis=1)
 SADF["WT"] = SADF.apply(lambda x: datetime.combine(x["date"], x["ATA_ATD_ltc"]), axis=1)
 
 # === Datum selectie ===
@@ -27,31 +24,26 @@ selected_datum = st.date_input(
 )
 
 # Data filteren
-# SADFI = np.where(SADF['LSV'] == 'L')
-# SADFO = np.where(SADF['LSV'] == 'S')
 day_SADFI = SADF[(SADF['LSV'] == 'L') & (SADF["date"] == pd.Timestamp(selected_datum))].copy()
 day_SADFO = SADF[(SADF['LSV'] == 'S') & (SADF["date"] == pd.Timestamp(selected_datum))].copy()
 
 if day_SADFI.empty and day_SADFO.empty:
     st.warning(f"Geen vluchten gevonden voor {selected_datum}.")
 else:
-    # Maak tijdstappen van 10 minuten for the selected day only
+    # Maak tijdstappen van 10 minuten
     start_tijd = pd.Timestamp(selected_datum)
     eind_tijd = start_tijd + timedelta(days=1)
-
     times = pd.date_range(start=start_tijd, end=eind_tijd, freq="10min")
 
-    ground_counts = []
-    initial_on_ground = 40  # Starting count
+    initial_on_ground = 40
 
-    for time in times:
-        # Count arrivals (landed by this time)
-        arrivals = (day_SADFI["WT"] <= time).sum()
-        # Count departures (departed by this time)
-        departures = (day_SADFO["WT"] <= time).sum()
+    # Fast searchsorted approach
+    day_SADFI_sorted = day_SADFI["WT"].sort_values().values
+    day_SADFO_sorted = day_SADFO["WT"].sort_values().values
 
-        on_ground = initial_on_ground + arrivals - departures
-        ground_counts.append(on_ground)
+    arrivals_count = np.searchsorted(day_SADFI_sorted, times, side='right')
+    departures_count = np.searchsorted(day_SADFO_sorted, times, side='right')
+    ground_counts = initial_on_ground + arrivals_count - departures_count
 
     # Plot
     fig, ax = plt.subplots(figsize=(12, 6))

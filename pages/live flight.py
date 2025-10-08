@@ -196,6 +196,7 @@ def createMap(df):
         "Flight time (seconds):",
         min_value=float(min_time),
         max_value=float(max_time),
+        step=(max_time - min_time) / df.shape[0],  # Adjust step based on the length of the file
         value=float(min_time),
         key="plane_time"
     )
