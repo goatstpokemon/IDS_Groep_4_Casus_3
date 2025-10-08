@@ -17,7 +17,8 @@ top_10_destinations = departures['Org/Des'].value_counts().head(10).reset_index(
 
 #print(top_10_destinations)
 
-
+sl.set_page_config(layout="wide")
+sl.logo('https://companieslogo.com/img/orig/FHZN.SW_BIG.D-79fb25dc.png?t=1720244491')
 namen = []
 for code in top_10_destinations['Org/Des']:
     # np.where zoekt de index waar de code matcht in de ICAO kolom

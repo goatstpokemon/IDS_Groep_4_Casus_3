@@ -130,11 +130,18 @@ with col5:
 
 df = pd.read_csv("data/schedule_airport.csv")
 #grafiek die aantal vluchten per maand laat zien
-sl.header('Aantal vluchten per maand')
-df['fpm'] = pd.to_datetime(df['STD'], format='%d/%m/%Y', errors='coerce').dt.month
-flights_per_month = df['fpm'].value_counts().sort_index() / 2
+sl.header('Aantal vluchten per maand (2019)')
+# Parse datetime and filter to 2019
+df['STD_dt'] = pd.to_datetime(df['STD'], dayfirst=True, errors='coerce')
+flights_per_month = (
+  df.loc[df['STD_dt'].dt.year == 2019, 'STD_dt']
+    .dt.month
+    .value_counts()
+    .reindex(range(1, 13), fill_value=0)
+    .sort_index()
+)
 
-sl.bar_chart(flights_per_month.reindex(range(1, 13), fill_value=0))
+sl.bar_chart(flights_per_month)
 
 
 #tabel die top 10 bestemmingen laat zien

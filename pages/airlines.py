@@ -4,7 +4,8 @@ import numpy as np
 import folium
 
 sl.title('Bekijk vliegtuigmaatschapijen')
-
+sl.set_page_config(layout="wide")
+sl.logo('https://companieslogo.com/img/orig/FHZN.SW_BIG.D-79fb25dc.png?t=1720244491')
 schedule_airport = pd.read_csv("data/schedule_airport.csv")
 airports_locaties = pd.read_csv("data/airports-extended-clean.csv", sep=";")
 airlines = pd.read_csv("data/airlines.csv")
@@ -61,7 +62,7 @@ sl.write(destinations)
 
 # Vind locaties (lat/lon) van bestemmingsluchthavens
 def getLocationDestinationAirport(destinations_input):
-    # Ondersteunt zowel DataFrame (van value_counts().reset_index()) als lijst/Series
+    # Ondersteunt zowel DataFrame (van value_counts()   reset_index()) als lijst/Series
     if isinstance(destinations_input, pd.DataFrame):
         # Standaardkolom van value_counts().reset_index() is 'index'
         if "index" in destinations_input.columns:

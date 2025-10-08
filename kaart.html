@@ -17,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_6936291ea8b459d424388ca2bce4e49e {
+                #map_a4fbcbb5fe392702402fd4ce1fa3136d {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -54,14 +54,14 @@
 <body>
     
     
-            <div class="folium-map" id="map_6936291ea8b459d424388ca2bce4e49e" ></div>
+            <div class="folium-map" id="map_a4fbcbb5fe392702402fd4ce1fa3136d" ></div>
         
 </body>
 <script>
     
     
-            var map_6936291ea8b459d424388ca2bce4e49e = L.map(
-                "map_6936291ea8b459d424388ca2bce4e49e",
+            var map_a4fbcbb5fe392702402fd4ce1fa3136d = L.map(
+                "map_a4fbcbb5fe392702402fd4ce1fa3136d",
                 {
                     center: [47.458, 8.555],
                     crs: L.CRS.EPSG3857,
@@ -78,7 +78,7 @@
 
         
     
-            var tile_layer_3a66af59fae93d8ab42b5e5213c84148 = L.tileLayer(
+            var tile_layer_9a74b25f6d47b8bca3d870f82783eb34 = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
   "minZoom": 0,
@@ -95,7 +95,89 @@
             );
         
     
-            tile_layer_3a66af59fae93d8ab42b5e5213c84148.addTo(map_6936291ea8b459d424388ca2bce4e49e);
+            tile_layer_9a74b25f6d47b8bca3d870f82783eb34.addTo(map_a4fbcbb5fe392702402fd4ce1fa3136d);
+        
+    
+            var marker_5f55f00b5ff9c8ce49423610b05c5928 = L.marker(
+                [47.458, 8.555],
+                {
+}
+            ).addTo(map_a4fbcbb5fe392702402fd4ce1fa3136d);
+        
+    
+            var icon_44383ee88e966e1c65545f17cc0eb1a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "plane",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3cbbfc132e4da1abe3ec56aa039f6e9c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bcd53ea763991a9e0eac3f5b96975b7d = $(`<div id="html_bcd53ea763991a9e0eac3f5b96975b7d" style="width: 100.0%; height: 100.0%;">Zurich Airport (ZRH)</div>`)[0];
+                popup_3cbbfc132e4da1abe3ec56aa039f6e9c.setContent(html_bcd53ea763991a9e0eac3f5b96975b7d);
+            
+        
+
+        marker_5f55f00b5ff9c8ce49423610b05c5928.bindPopup(popup_3cbbfc132e4da1abe3ec56aa039f6e9c)
+        ;
+
+        
+    
+    
+                marker_5f55f00b5ff9c8ce49423610b05c5928.setIcon(icon_44383ee88e966e1c65545f17cc0eb1a9);
+            
+    
+            var marker_874edd6bf8cb244a99774cb3889c3922 = L.marker(
+                [63.98500061, -22.60560036],
+                {
+}
+            ).addTo(map_a4fbcbb5fe392702402fd4ce1fa3136d);
+        
+    
+            var icon_13f29bd85f51f9aac256fc5b990a6ad1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "plane",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f1d8aaaf00649705748830b5217f1a7c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_47dc1870f1753a416153d940fafc1e81 = $(`<div id="html_47dc1870f1753a416153d940fafc1e81" style="width: 100.0%; height: 100.0%;">Keflavik International Airport (BIKF)</div>`)[0];
+                popup_f1d8aaaf00649705748830b5217f1a7c.setContent(html_47dc1870f1753a416153d940fafc1e81);
+            
+        
+
+        marker_874edd6bf8cb244a99774cb3889c3922.bindPopup(popup_f1d8aaaf00649705748830b5217f1a7c)
+        ;
+
+        
+    
+    
+                marker_874edd6bf8cb244a99774cb3889c3922.setIcon(icon_13f29bd85f51f9aac256fc5b990a6ad1);
+            
+    
+            var poly_line_bc0e15d1ddcea0bd74bd8d352caa823a = L.polyline(
+                [[47.458, 8.555], [63.98500061, -22.60560036]],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_a4fbcbb5fe392702402fd4ce1fa3136d);
         
 </script>
 </html>

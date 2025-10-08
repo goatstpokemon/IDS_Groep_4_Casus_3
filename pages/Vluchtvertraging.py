@@ -16,7 +16,8 @@ def load_data():
 
     return schedule_airport, airports, airlines
 
-
+st.set_page_config(layout="wide")
+st.logo('https://companieslogo.com/img/orig/FHZN.SW_BIG.D-79fb25dc.png?t=1720244491')
 # ===== Data inladen =====
 schedule_airport, airports, airlines = load_data()
 
@@ -97,13 +98,13 @@ def maak_kaart(bestemming_code):
         folium.Marker(
             location=[zrh_lat, zrh_lon],
             popup="Zurich Airport (ZRH)",
-            icon=folium.Icon(color="blue")
+            icon=folium.Icon(color="blue", icon="plane", prefix='fa')
         ).add_to(kaart)
 
         folium.Marker(
             location=[dest_lat, dest_lon],
             popup=f"{dest_name} ({bestemming_code})",
-            icon=folium.Icon(color="red")
+            icon=folium.Icon(color="red", icon="plane", prefix='fa')
         ).add_to(kaart)
 
         folium.PolyLine(
