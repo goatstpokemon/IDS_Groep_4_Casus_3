@@ -6,6 +6,7 @@ import folium
 # Data inladen
 s = pd.read_csv("data/schedule_airport.csv")
 airports = pd.read_csv("data/airports.csv")
+airlines = pd.read_csv("data/airlines.csv")
 
 def add_logo():
     sl.markdown(
@@ -109,7 +110,7 @@ sl.markdown(
 
 sl.header('Belangrijke statistieken')
 s["UNQ"] = s["FLT"].astype(str).str[:2]
-airlines = s["UNQ"].unique()
+airlinesUnique = s["UNQ"].unique()
 col1, col2, col3, col4, col5 = sl.columns(5, border=True)
 
 with col1:
@@ -123,7 +124,7 @@ with col3:
     sl.subheader(f"{s[s['LSV'] == 'L'].shape[0]}")
 with col4:
     sl.text("Unieke vliegmaatschappijen")
-    sl.subheader(f"{len(airlines)}")
+    sl.subheader(f"{len(airlinesUnique)}")
 with col5:
     sl.text("Unieke bestemmingen")
     sl.subheader(f"{s['Org/Des'].nunique()}")
@@ -158,4 +159,43 @@ for code in top_10_destinations['Org/Des']:
 
 top_10_destinations['Vliegveld Naam'] = namen
 
+sl.header("Top 10 destinations Zürich Airport")
 sl.write(top_10_destinations)
+
+# Top 10 bestemmingen met de meeste vluchten
+#s["UNQ"] = s["FLT"].astype(str).str[:2]
+#top_10_airlines = s['FLT'].value_counts().head(10).reset_index()
+#print(top_10_airlines)
+
+# Maak een nieuwe kolom 'Airline' door de eerste twee karakters
+        # van de 'FLT' kolom te nemen. Dit is de IATA-code van de maatschappij.
+
+s["Airline"] = s["FLT"].astype(str).str[:2]
+
+
+# Tel het aantal voorkomens van elke unieke airline code.
+top_airlines = s['Airline'].value_counts()
+
+# Pak de top 10 van deze airlines.
+top_10_airlines = top_airlines.head(10)
+
+# Print de resultaten naar de console.
+#print("Top 10 meest voorkomende vluchtcodes (Airlines):")
+print(top_10_airlines)
+
+#print(airlines['IATA'].head())
+#namen = []
+#for code in s['FLT']:
+    # np.where zoekt de index waar de code matcht in de IATA kolom
+  
+    #match_index = np.where(airlines['IATA'] == code)
+
+    #if len(match_index[0]) > 0:
+        #naam = airlines['Name'].iloc[match_index[0][0]]
+    #else:
+        #naam = None # Geen match gevonden
+    #namen.append(naam)
+
+#top_10_destinations['Airline'] = namen
+sl.header("Top 10 airlines Zürich Airport")
+sl.write(top_10_airlines)
