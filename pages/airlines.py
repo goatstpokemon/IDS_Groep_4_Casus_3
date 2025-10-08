@@ -58,7 +58,6 @@ locations = airports_locaties_filtered.merge(destinations, on="ICAO", how="left"
 min_val = locations["Aantal Vluchten"].min()
 max_val = locations["Aantal Vluchten"].max()
 
-# Pastelkleuren van groen naar rood
 colormap = LinearColormap(
     colors=["#b6e2b6", "#f4e5af", "#f4c27f", "#f49b7a", "#e57373"],
     vmin=min_val,
@@ -150,7 +149,6 @@ def createMap(locations_df: pd.DataFrame):
      font-size:14px;
      padding: 10px;
      border-radius: 8px;
-   
      ">
      <b>Kleurenschaal</b><br>
      <small>Groen = weinig vluchten<br>Rood = veel vluchten</small>
@@ -162,7 +160,16 @@ def createMap(locations_df: pd.DataFrame):
 
     return m
 
-# === Kaart tonen ===
-map_ = createMap(locations)
+# === Bestemmingen sectie ===
 sl.subheader(f"Bestemmingen van {getAirlineName(selectedAirline)}")
+
+sl.markdown("""
+**Uitleg kaart**  
+- Elke pointer op de kaart geeft een luchthaven weer waar de maatschappij naartoe vliegt.  
+- De kleur geeft het aantal vluchten aan (groen = weinig, rood = veel).  
+- Klik op een pointer om de stad en ICAO-code te zien.  
+
+""")
+
+map_ = createMap(locations)
 sl.components.v1.html(map_._repr_html_(), height=750)
