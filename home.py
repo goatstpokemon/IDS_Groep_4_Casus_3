@@ -2,7 +2,7 @@ import streamlit as sl
 import pandas as pd
 import numpy as np
 import folium
-
+import plotly.express as px
 # Data inladen
 s = pd.read_csv("data/schedule_airport.csv")
 airports = pd.read_csv("data/airports.csv")
@@ -129,19 +129,69 @@ with col5:
     sl.subheader(f"{s['Org/Des'].nunique()}")
 
 df = pd.read_csv("data/schedule_airport.csv")
-#grafiek die aantal vluchten per maand laat zien
-sl.header('Aantal vluchten per maand (2019)')
+
 # Parse datetime and filter to 2019
 df['STD_dt'] = pd.to_datetime(df['STD'], dayfirst=True, errors='coerce')
+#kies jaar
+
+jaar = sl.selectbox("Kies een jaar", options=[2019, 2020], key="jaar_selectie", index=0)
+
+
+def color_band(value):
+    if value >= 19000:
+        return "≥19000"
+    if value >= 15000:
+        return "≥15000"
+    if value >= 10000:
+        return "≥10000"
+    if value >= 5000:
+        return "≥5000"
+    return "<5000"
+#grafiek die aantal vluchten per maand laat zien
+sl.header(f'Aantal vluchten per maand ({jaar})')
 flights_per_month = (
-  df.loc[df['STD_dt'].dt.year == 2019, 'STD_dt']
+  df.loc[df['STD_dt'].dt.year == jaar, 'STD_dt']
     .dt.month
     .value_counts()
     .reindex(range(1, 13), fill_value=0)
     .sort_index()
 )
 
-sl.bar_chart(flights_per_month)
+data = pd.DataFrame(
+    {
+        "month": flights_per_month.index,
+        "flights": flights_per_month.values,
+    }
+)
+data["band"] = data["flights"].apply(color_band)
+band_colors = {
+    "≥19000": "indianred",
+    "≥15000": "red",
+    "≥10000": "darkorange",
+    "≥5000": "gold",
+    "<5000": "yellowgreen",
+}
+
+
+fig = px.bar(
+    data,
+    x="month",
+    y="flights",
+    color="band",
+    category_orders={"band": list(band_colors.keys())},
+    color_discrete_map=band_colors,
+    labels={"month": "Maand", "flights": "Vluchten", "band": "Drukte"},
+)
+
+fig.update_layout(
+    bargap=0.2,
+    width=800,
+    height=400,
+    legend_title_text="Drukte",
+)
+fig.update_xaxes(dtick=1)
+
+sl.plotly_chart(fig, use_container_width=True)
 
 
 #tabel die top 10 bestemmingen laat zien
