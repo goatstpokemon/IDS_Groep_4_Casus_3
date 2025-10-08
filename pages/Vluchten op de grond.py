@@ -63,7 +63,7 @@ st.markdown(
     <div class="image-overlay-container overlay-gradient">
       <img src='""" + image_url + """' alt="Hero" />
       <div class="overlay-text">
-        <span>Zurich Airport — Hoeveel vliegtuigen zijn er op de grond?</span>
+        <span>vliegtuigen op de grond</span>
       </div>
     </div>
     """,

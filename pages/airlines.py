@@ -28,6 +28,8 @@ sl.markdown(
         position: absolute;
         inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0; */
         display: flex;
+        flex-direction: column;
+        height: 100%;
         align-items: center; /* vertical centering */
         justify-content: center; /* horizontal centering */
         padding: 1rem;
@@ -56,20 +58,22 @@ sl.markdown(
       }
       .overlay-text > span {
         position: relative;
+
         z-index: 1;
+
       }
     </style>
     <div class="image-overlay-container overlay-gradient">
       <img src='""" + image_url + """' alt="Hero" />
       <div class="overlay-text">
-        <span>Zurich Airport — vliegtuigmaatschapijen bestemmingen</span>
+        <span>vliegtuigmaatschapijen bestemmingen</span>
       </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 sl.set_page_config(page_title="Luchtvaartmaatschappijen", layout="wide")
-sl.title('Vluchtbestemmingen per luchtvaartmaatschappij')
+
 
 # === DATA INLADEN ===
 schedule_airport = pd.read_csv("data/schedule_airport.csv")

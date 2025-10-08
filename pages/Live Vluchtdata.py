@@ -63,7 +63,7 @@ sl.markdown(
     <div class="image-overlay-container overlay-gradient">
       <img src='""" + image_url + """' alt="Hero" />
       <div class="overlay-text">
-        <span>Zurich Airport — Live vluchtgegevens</span>
+        <span>Live vluchtgegevens</span>
       </div>
     </div>
     """,

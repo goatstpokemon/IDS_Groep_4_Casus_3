@@ -101,13 +101,14 @@ sl.markdown(
     <div class="image-overlay-container overlay-gradient">
       <img src='""" + image_url + """' alt="Hero" />
       <div class="overlay-text">
-        <span>Zurich Airport — Home</span>
+        <span>Homepagina</span>
       </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
+sl.header('Welkom bij de Zurich Airport Dashboard')
+sl.text("Met deze dashboard willen we graag laten zien wat er allemaal gebeurt met de vliegverkeer van Zurich Airport. We kijken naar welke vliegtuigmaatschapijen je moet vermijden als je op tijd wilt aankomen, welke bestemmingen het drukst zijn en hoeveel vluchten er per maand vertrekken en aankomen. Ook willen we zien hoe druk het op een gegeven moment op een gegeven moment met betrekking tot de aantal vliegtoestellen op de grond. Verder willen we kijken naar de live vluchtdata tussen Schiphol en Barcalona en hoe laat deze vluchten aankomen en vertrekken. Hoe hoog ze zijn, hoe snel ze vliegen en hoelang de vlucht bezig is op een specifiek moment ")
 sl.header('Belangrijke statistieken')
 s["UNQ"] = s["FLT"].astype(str).str[:2]
 airlinesUnique = s["UNQ"].unique()
@@ -200,7 +201,7 @@ departures = s[s['LSV']== 'S']
 # Top 10 bestemmingen met de meeste vluchten
 top_10_destinations = departures['Org/Des'].value_counts().head(10).reset_index()
 
-#print(top_10_destinations)
+
 
 
 namen = []
@@ -222,7 +223,7 @@ sl.write(top_10_destinations)
 # Top 10 bestemmingen met de meeste vluchten
 #s["UNQ"] = s["FLT"].astype(str).str[:2]
 #top_10_airlines = s['FLT'].value_counts().head(10).reset_index()
-#print(top_10_airlines)
+
 
 # Maak een nieuwe kolom 'Airline' door de eerste twee karakters
         # van de 'FLT' kolom te nemen. Dit is de IATA-code van de maatschappij.
@@ -237,10 +238,9 @@ top_airlines = s['Airline'].value_counts()
 top_10_airlines = top_airlines.head(10)
 
 # Print de resultaten naar de console.
-#print("Top 10 meest voorkomende vluchtcodes (Airlines):")
-print(top_10_airlines)
 
-#print(airlines['IATA'].head())
+
+
 #namen = []
 #for code in s['FLT']:
     # np.where zoekt de index waar de code matcht in de IATA kolom
