@@ -2,112 +2,257 @@ import streamlit as sl
 import pandas as pd
 import numpy as np
 import folium
-elke_s_flight_1 = pd.read_excel('data/30sFlight_1.xlsx')
-elke_s_flight_2 = pd.read_excel('data/30sFlight_2.xlsx')
-elke_s_flight_3 = pd.read_excel('data/30sFlight_3.xlsx')
-elke_s_flight_4 = pd.read_excel('data/30sFlight_4.xlsx')
-elke_s_flight_5 = pd.read_excel('data/30sFlight_5.xlsx')
-elke_s_flight_6 = pd.read_excel('data/30sFlight_6.xlsx')
-schedule_airport = pd.read_csv('data/schedule_airport.csv')
-airports_locaties = pd.read_csv('data/airports-extended-clean.csv', sep=';')
-airlines = pd.read_csv('data/airlines.csv')
+import plotly.express as px
+# Data inladen
+s = pd.read_csv("data/schedule_airport.csv")
+airports = pd.read_csv("data/airports.csv")
+airlines = pd.read_csv("data/airlines.csv")
+
+def add_logo():
+    sl.markdown(
+        """
+        <style>
+
+
+            [data-testid="stSidebarNav"]::before {
+                content: "Pagina's";
+                text-align: center;
+                font-family: 'helvetica', sans-serif;
+                color: white;
+                font-weight: bold;
+                font-size: 25px;
+                position: relative;
+
+
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+add_logo()
+
 def main_page():
+    # Hoofdpagina titel
     sl.markdown("# Homepagina ")
 
 
 def page2():
-    sl.markdown("# Pagina 2")
-
-# Dropping nutteloze data
-# schedule_airport.drop('DL1', inplace=True, axis=1)
-# schedule_airport.drop('DL2', inplace=True, axis=1)
-# schedule_airport.drop('IX1', inplace=True, axis=1)
-# schedule_airport.drop('IX2', inplace=True, axis=1)
-print(schedule_airport.head())
-
-# Filteren op ICAO codes die voorkomen in beide
-airports_locaties_filtered = airports_locaties[
-    airports_locaties['ICAO'].isin(schedule_airport['Org/Des'])
-]
-
-# Explore data
-# print(schedule_airport.info())
-
-#Verschillende maatschappijen
-schedule_airport['UNQ'] = schedule_airport['FLT'].astype(str).str[:2]
-print(schedule_airport['UNQ'].value_counts().reset_index())
+    # Tweede pagina titel
+    sl.markdown("# Bekijk vliegmaatschapijen")
+sl.set_page_config(layout="wide")
+sl.logo('https://companieslogo.com/img/orig/FHZN.SW_BIG.D-79fb25dc.png?t=1720244491')
 
 
-# Top 5 van Netwerkkaart maken
-airlineList = schedule_airport['UNQ'].unique()
-selectedAirline = sl.selectbox("Select a Airline:", airlineList)
+image_url = "https://media.myswitzerland.com/image/fetch/c_lfill,g_auto,w_3200,h_1800/f_auto,q_80,fl_keep_iptc/https://www.myswitzerland.com/-/media/st/gadmin/images/partner/strapa/flughafen%20zrich/03_airport_zurich_plane_92626.jpg"
 
-# Functie voor het ophalen van alle vluchten
-def getAllFlightAirline(airline):
-    return np.where(schedule_airport['UNQ'] == airline)
+sl.markdown(
+    """
+    <style>
+      .image-overlay-container {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px;
+        line-height: 0; /* remove whitespace gap below images */
+      }
+      .image-overlay-container img {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 20px;
+        display: block;
+      }
+      .overlay-text {
+        position: absolute;
+        inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0; */
+        display: flex;
+        align-items: center; /* vertical centering */
+        justify-content: center; /* horizontal centering */
+        padding: 1rem;
+        color: white;
+        font-weight: 500;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 2.5rem;
+        letter-spacing: 1px;
+        text-align: center;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        pointer-events: none; /* clicks pass through if needed */
+      }
+      /* Optional: add a dark gradient for contrast */
+      .overlay-gradient::before {
+        content: "";
+        position: absolute;
+        border-radius: 20px;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.4),
+          rgba(0,0,0,0.2) 40%,
+          rgba(0,0,0,0.5)
+        );
+        z-index: 0;
+      }
+      .overlay-text > span {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+    <div class="image-overlay-container overlay-gradient">
+      <img src='""" + image_url + """' alt="Hero" />
+      <div class="overlay-text">
+        <span>Homepagina</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+sl.header('Welkom bij de Zurich Airport Dashboard')
+sl.text("Met deze dashboard willen we graag laten zien wat er allemaal gebeurt met de vliegverkeer van Zurich Airport. We kijken naar welke vliegtuigmaatschapijen je moet vermijden als je op tijd wilt aankomen, welke bestemmingen het drukst zijn en hoeveel vluchten er per maand vertrekken en aankomen. Ook willen we zien hoe druk het op een gegeven moment op een gegeven moment met betrekking tot de aantal vliegtoestellen op de grond. Verder willen we kijken naar de live vluchtdata tussen Schiphol en Barcalona en hoe laat deze vluchten aankomen en vertrekken. Hoe hoog ze zijn, hoe snel ze vliegen en hoelang de vlucht bezig is op een specifiek moment ")
+sl.header('Belangrijke statistieken')
+s["UNQ"] = s["FLT"].astype(str).str[:2]
+airlinesUnique = s["UNQ"].unique()
+col1, col2, col3, col4, col5 = sl.columns(5, border=True)
 
-flights = getAllFlightAirline(selectedAirline)
-def getAirlineName(airline_code):
-    return np.where(airlines[airlines['IATA'] == airline_code]['Name'], airlines[airlines['IATA'] == airline_code]['Name'], "Unknown Airline")[0]
+with col1:
+    sl.text("Totaal aantal vluchten")
+    sl.subheader(f"{len(s)}")
+with col2:
+    sl.text("Aantal inbound")
+    sl.subheader(f"{s[s['LSV'] == 'S'].shape[0]}")
+with col3:
+    sl.text("Aantal outbound")
+    sl.subheader(f"{s[s['LSV'] == 'L'].shape[0]}")
+with col4:
+    sl.text("Unieke vliegmaatschappijen")
+    sl.subheader(f"{len(airlinesUnique)}")
+with col5:
+    sl.text("Unieke bestemmingen")
+    sl.subheader(f"{s['Org/Des'].nunique()}")
 
-sl.header(getAirlineName(selectedAirline))
-# Vliegveld bestemming vinden op basis van flucht
-def getDestinationAirport(flightIndices):
-    return schedule_airport.iloc[flightIndices]['Org/Des'].value_counts().reset_index()
+df = pd.read_csv("data/schedule_airport.csv")
 
-destinations = getDestinationAirport(flights)
-sl.header("Aantal vluchten per bestemming")
-sl.write(destinations)
-# get airline name from airlines.csv and show in streamlit
+# Parse datetime and filter to 2019
+df['STD_dt'] = pd.to_datetime(df['STD'], dayfirst=True, errors='coerce')
+#kies jaar
 
-# find location of destination airport
-def getLocationDestinationAirport(destinations):
-    # destinations can be a DataFrame (from value_counts().reset_index()) or a list/Series of ICAO codes
-    if isinstance(destinations, pd.DataFrame):
-        # common column produced by value_counts().reset_index() is 'index'
-        if 'index' in destinations.columns:
-            codes = destinations['index']
-        else:
-            # fallback to the first column if different
-            codes = destinations.iloc[:, 0]
+jaar = sl.selectbox("Kies een jaar", options=[2019, 2020], key="jaar_selectie", index=0)
+
+
+def color_band(value):
+    if value >= 19000:
+        return "≥19000"
+    if value >= 15000:
+        return "≥15000"
+    if value >= 10000:
+        return "≥10000"
+    if value >= 5000:
+        return "≥5000"
+    return "<5000"
+#grafiek die aantal vluchten per maand laat zien
+sl.header(f'Aantal vluchten per maand ({jaar})')
+flights_per_month = (
+  df.loc[df['STD_dt'].dt.year == jaar, 'STD_dt']
+    .dt.month
+    .value_counts()
+    .reindex(range(1, 13), fill_value=0)
+    .sort_index()
+)
+
+data = pd.DataFrame(
+    {
+        "month": flights_per_month.index,
+        "flights": flights_per_month.values,
+    }
+)
+data["band"] = data["flights"].apply(color_band)
+band_colors = {
+    "≥19000": "indianred",
+    "≥15000": "red",
+    "≥10000": "darkorange",
+    "≥5000": "gold",
+    "<5000": "yellowgreen",
+}
+
+
+fig = px.bar(
+    data,
+    x="month",
+    y="flights",
+    color="band",
+    category_orders={"band": list(band_colors.keys())},
+    color_discrete_map=band_colors,
+    labels={"month": "Maand", "flights": "Vluchten", "band": "Drukte"},
+)
+
+fig.update_layout(
+    bargap=0.2,
+    width=800,
+    height=400,
+    legend_title_text="Drukte",
+)
+fig.update_xaxes(dtick=1)
+
+sl.plotly_chart(fig, use_container_width=True)
+
+
+#tabel die top 10 bestemmingen laat zien
+departures = s[s['LSV']== 'S']
+# Top 10 bestemmingen met de meeste vluchten
+top_10_destinations = departures['Org/Des'].value_counts().head(10).reset_index()
+
+
+
+
+namen = []
+for code in top_10_destinations['Org/Des']:
+    # np.where zoekt de index waar de code matcht in de ICAO kolom
+    match_index = np.where(airports['ICAO'] == code)
+
+    if len(match_index[0]) > 0:
+        naam = airports['Name'].iloc[match_index[0][0]]
     else:
-        codes = destinations
-    return airports_locaties_filtered[airports_locaties_filtered['ICAO'].isin(codes)]
+        naam = None # Geen match gevonden
+    namen.append(naam)
 
-locations = getLocationDestinationAirport(destinations)
-sl.write(locations)
+top_10_destinations['Vliegveld Naam'] = namen
+
+sl.header("Top 10 destinations Zürich Airport")
+sl.write(top_10_destinations)
+
+# Top 10 bestemmingen met de meeste vluchten
+#s["UNQ"] = s["FLT"].astype(str).str[:2]
+#top_10_airlines = s['FLT'].value_counts().head(10).reset_index()
+
+
+# Maak een nieuwe kolom 'Airline' door de eerste twee karakters
+        # van de 'FLT' kolom te nemen. Dit is de IATA-code van de maatschappij.
+
+s["Airline"] = s["FLT"].astype(str).str[:2]
+
+
+# Tel het aantal voorkomens van elke unieke airline code.
+top_airlines = s['Airline'].value_counts()
+
+# Pak de top 10 van deze airlines.
+top_10_airlines = top_airlines.head(10)
+
+# Print de resultaten naar de console.
 
 
 
-# kaart maken met folium en streamlit van waar vliegtuigen naartoe gaan met een lijn
-def createMap(locations):
-    # start map centered around the Netherlands
-    m = folium.Map(location=[52.1326, 5.2913], zoom_start=4)
+#namen = []
+#for code in s['FLT']:
+    # np.where zoekt de index waar de code matcht in de IATA kolom
 
-    # add markers for each airport, tolerate comma decimals and missing values
-    for _, row in locations.iterrows():
-        lat_raw = row.get('Latitude', None)
-        lon_raw = row.get('Longitude', None)
+    #match_index = np.where(airlines['IATA'] == code)
 
-        if pd.isna(lat_raw) or pd.isna(lon_raw):
-            continue
+    #if len(match_index[0]) > 0:
+        #naam = airlines['Name'].iloc[match_index[0][0]]
+    #else:
+        #naam = None # Geen match gevonden
+    #namen.append(naam)
 
-        try:
-            lat = float(str(lat_raw).replace(',', '.'))
-            lon = float(str(lon_raw).replace(',', '.'))
-        except (ValueError, TypeError):
-            # skip rows with invalid coordinates
-            continue
-
-        popup_text = f"{row.get('City', '')} ({row.get('ICAO', '')})"
-        folium.Marker(
-            location=[lat, lon],
-            popup=popup_text,
-            icon=folium.Icon(color='blue', icon='plane', prefix='fa')
-        ).add_to(m)
-
-    return m
-
-map_ = createMap(locations)
-# render folium map in Streamlit
-sl.components.v1.html(map_._repr_html_(), height=600)
+#top_10_destinations['Airline'] = namen
+sl.header("Top 10 airlines Zürich Airport")
+sl.write(top_10_airlines)
